@@ -1,29 +1,37 @@
-; Includes
+; includes
 !include "MUI2.nsh"
 !include "nsDialogs.nsh"
 !include "LogicLib.nsh"
 !include "x64.nsh"
 !include "FileFunc.nsh"
 
-; Settings
-!define $0 "v2.0.1"		; $0 is Version Number
-Name "3D Pinball for Windows - Space Cadet ${$0}"
-OutFile "Space Cadet Pinball Installer (${$0}).exe"
-BrandingText "${$0} by k4zmu2a | Copyright Maxis 1995, Microsoft 2007 | Installer by adambonneruk"
-RequestExecutionLevel admin
-Unicode True
-SetCompressor /SOLID lzma	; This reduces installer size by approx 30~35%
+; defines
+!define $PRODUCT_NAME "3D Pinball for Windows - Space Cadet"
+!define $APPVERSION "v2.0.1"
+!define $PRODUCT_PUBLISHER "Adam Bonner"
+!define $ICON_PATH "assets\icon\pinball.ico"
+!define $REG_PATH "Software\Microsoft\Windows\CurrentVersion\Uninstall\Space Cadet Pinball"
 
-; Modern interface settings
-!define MUI_ICON "assets\icon\pinball.ico"
-!define MUI_UNICON "assets\icon\pinball.ico"
-!define MUI_ABORTWARNING
+; compiler options
+RequestExecutionLevel admin
+SetCompressor /SOLID lzma
+Unicode True
+
+; settings
+Name "${$PRODUCT_NAME} ${$APPVERSION}"
+OutFile "Space Cadet Pinball Installer (${$APPVERSION}).exe"
+BrandingText "${$APPVERSION} by k4zmu2a | installer by adambonneruk"
+
+; gui configuration
+!define MUI_ICON ${$ICON_PATH}
+!define MUI_UNICON ${$ICON_PATH}
+!define MUI_ABORTWARNING ; "are you sure you want to quit?" prompt
 !define MUI_WELCOMEFINISHPAGE_BITMAP "assets\wizard.bmp"
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_BITMAP ".\assets\header.bmp"
-!define MUI_COMPONENTSPAGE_SMALLDESC ;Show components page with a small description and big box for components
+!define MUI_COMPONENTSPAGE_SMALLDESC ; show small description for each component
 
-; Pages (as MUI2 Macros)
+; mui2 macros/pages
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE "assets\installer-licences.txt"
 !insertmacro MUI_PAGE_DIRECTORY
@@ -33,114 +41,106 @@ SetCompressor /SOLID lzma	; This reduces installer size by approx 30~35%
 !insertmacro MUI_UNPAGE_INSTFILES
 !insertmacro MUI_LANGUAGE "English"
 
-;Installer Sections
-Section "Base Game Files (modern decompilation)" SecSCP
+;installer sections
+Section "Base Game Files (Modern Decompilation)" SecBaseGame ; k4zmu2a's files
 
-	SectionIn RO
+	SectionIn RO ; read-only
 	SetOutPath $INSTDIR
+	RMDIR /r $INSTDIR\*.* ; clean the installation directory
+	File ${$ICON_PATH} ; add icon for add/remove programs
 
-	RMDIR /r $INSTDIR\*.* ; Remove all files and folders from install directory for clean installation
-	File "assets\icon\pinball.ico" ; add icon for add/remove programs
-
-	; Recompiled/SDL k4zmu2a files (with x86 vs x86-64 autodetection)
+	; copy files given x86 or x86-64 operating system
 	${If} ${RunningX64}
 		File /r /x *.txt /x *.sha1 assets\software\SpaceCadetPinballx64Win\*.*
 	${else}
 		File /r /x *.txt /x *.sha1 assets\software\SpaceCadetPinballx86Win\*.*
 	${EndIf}
 
-	; Add Uninstaller Entry to Add/Remove Programs
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SpaceCadetPinball" "DisplayName" "3D Pinball for Windows - Space Cadet"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SpaceCadetPinball" "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SpaceCadetPinball" "QuietUninstallString" "$\"$INSTDIR\uninstall.exe$\" /S"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SpaceCadetPinball" "DisplayIcon" "$\"$INSTDIR\pinball.ico$\""
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SpaceCadetPinball" "DisplayVersion" "v2.0.1"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SpaceCadetPinball" "Publisher" "adambonneruk" ; Win 10 not showing this
-	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SpaceCadetPinball" "NoModify" 1
-	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SpaceCadetPinball" "NoRepair" 1
+	; add uninstaller entry to the add/remove programs control panel
+	WriteRegStr HKLM "${$REG_PATH}" "DisplayName" "${$PRODUCT_NAME}"
+	WriteRegStr HKLM "${$REG_PATH}" "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
+	WriteRegStr HKLM "${$REG_PATH}" "QuietUninstallString" "$\"$INSTDIR\uninstall.exe$\" /S"
+	WriteRegStr HKLM "${$REG_PATH}" "DisplayIcon" "$\"$INSTDIR\pinball.ico$\""
+	WriteRegStr HKLM "${$REG_PATH}" "DisplayVersion" "${$APPVERSION}"
+	WriteRegStr HKLM "${$REG_PATH}" "Publisher" "${$PRODUCT_PUBLISHER}" ; Not show in Windows 10
+	WriteRegDWORD HKLM "${$REG_PATH}" "NoModify" 1
+	WriteRegDWORD HKLM "${$REG_PATH}" "NoRepair" 1
 
-	; Get Installed Size for use in Estimated Size in Windows Add/Remove Programs
-	!define ARP "Software\Microsoft\Windows\CurrentVersion\Uninstall\SpaceCadetPinball"
+	; estimate size of installed files for the add/remove programs control panel
+	!define ARP "${$REG_PATH}"
 	${GetSize} "$INSTDIR" "/S=0K" $0 $1 $2
 	IntFmt $0 "0x%08X" $0
 	WriteRegDWORD HKLM "${ARP}" "EstimatedSize" "$0"
 
-	; Create Uninstaller
+	; create uninstaller
 	WriteUninstaller "$INSTDIR\uninstall.exe"
 
 SectionEnd
 
-Section "3D Pinball for Windows - Space Cadet" secPINBALL
+Section "${$PRODUCT_NAME}" secPinball ; windows xp pinball.exe files
 
-	SectionIn RO
-
-	; Generic PINBALL.EXE files from Windows XP
-	File /r /x *.txt /x *.sha1 assets\software\Pinball\*.*
+	SectionIn RO ; read-only
+	File /r /x *.txt /x *.sha1 assets\software\Pinball\*.* ; copy pinball.exe's files
 
 SectionEnd
 
-Section  /o "Full Tilt! Pinball Files" secCADET ; /o == unchecked
+Section /o "Full Tilt! Pinball files" secFullTilt ; full tilt pinball file ; /o == unchecked
 
-	; 32-Bit Commercial CADET package files from disc
-	File /nonfatal /r /x *.txt /x *.sha1 assets\software\CADET\*.*
+	File /nonfatal /r /x *.txt /x *.sha1 assets\software\CADET\*.* ; copy full tile files ; optional
 
 SectionEnd
 
-; Start Menu Shortcuts
 Section "Start Menu Shortcuts" SecStartMenu
 
 	CreateDirectory "$SMPROGRAMS\Space Cadet Pinball"
-	CreateShortcut "$SMPROGRAMS\Space Cadet Pinball\3D Pinball for Windows - Space Cadet.lnk" "$INSTDIR\SpaceCadetPinball.exe"
+	CreateShortcut "$SMPROGRAMS\Space Cadet Pinball\${$PRODUCT_NAME}.lnk" "$INSTDIR\SpaceCadetPinball.exe"
 	CreateShortcut "$SMPROGRAMS\Space Cadet Pinball\Uninstall.lnk" "$INSTDIR\uninstall.exe"
 
 SectionEnd
 
-; Desktop Shortcut
 Section "Desktop Shortcut" SecDeskShort
 
-	CreateShortcut "$DESKTOP\3D Pinball for Windows - Space Cadet.lnk" "$INSTDIR\SpaceCadetPinball.exe" "" "$INSTDIR\pinball.ico" 0
+	CreateShortcut "$DESKTOP\${$PRODUCT_NAME}.lnk" "$INSTDIR\SpaceCadetPinball.exe" "" "$INSTDIR\pinball.ico" 0
 
 SectionEnd
 
-; x86 vs x86-64 autodetection / install directory
 Function .onInit
 
+	; set install folder given x86 or x86-64 operating system
 	${If} ${RunningX64}
-		StrCpy $INSTDIR "$PROGRAMFILES64\Space Cadet Pinball" ; x86-64
+		StrCpy $INSTDIR "$PROGRAMFILES64\Space Cadet Pinball"
+		SetRegView 64
 	${else}
-		StrCpy $INSTDIR "$PROGRAMFILES\Space Cadet Pinball"  ; x86
+		StrCpy $INSTDIR "$PROGRAMFILES\Space Cadet Pinball"
+		SetRegView 32
 	${EndIf}
 
 FunctionEnd
 
-;Language strings
+; component descriptions
 LangString DESC_SecSCP ${LANG_ENGLISH} 			"Install K4zmu2a's decompilation base game, includes 32/64-bit auto-detection"
-LangString DESC_SecPINBALL ${LANG_ENGLISH} 		"Install the simpler, pre-installed pinball game included with older versions of Windows"
-LangString DESC_SecCADET ${LANG_ENGLISH} 		"Install the Full Tilt! version with high-resolution textures and advanced gameplay features"
+LangString DESC_SecPinball ${LANG_ENGLISH} 		"Install the classic pinball game included with older versions of Windows"
+LangString DESC_SecFullTilt ${LANG_ENGLISH} 	"Install Full Tilt! Pinball with high-resolution textures and advanced gameplay features"
 LangString DESC_SecStartMenu ${LANG_ENGLISH} 	"Install Windows Start Menu shortcuts"
 LangString DESC_SecDeskShort ${LANG_ENGLISH} 	"Install Windows desktop shortcut"
 
-;Assign language strings to sections
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
     !insertmacro MUI_DESCRIPTION_TEXT ${SecSCP} $(DESC_SecSCP)
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecPINBALL} $(DESC_SecPINBALL)
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecCADET} $(DESC_SecCADET)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecPinball} $(DESC_SecPinball)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecFullTilt} $(DESC_SecFullTilt)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecStartMenu} $(DESC_SecStartMenu)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecDeskShort} $(DESC_SecDeskShort)
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
-;Uninstaller Section
+; configure uninstaller
 Section "Uninstall"
 
-	RMDIR /r $INSTDIR\*.* ; Remove all files and folders from install directory
-	Delete "$SMPROGRAMS\Space Cadet Pinball\*.lnk" ; Remove shortcuts
-	Delete "$DESKTOP\3D Pinball for Windows - Space Cadet.lnk" ; Remove desktop shortcut
+	RMDIR /r $INSTDIR\*.* ; clean the installation directory
+	Delete "$DESKTOP\${$PRODUCT_NAME}.lnk" ; delete desktop shortcut
+	DeleteRegKey HKLM "${$REG_PATH}" ; delete windows add/remove programs key
 
-	; Remove directories
+	; remove start menu shortcuts
+	Delete "$SMPROGRAMS\Space Cadet Pinball\*.lnk"
 	RMDir "$SMPROGRAMS\Space Cadet Pinball"
-	RMDir "$INSTDIR"
-
-	; Remove Windows Add/Remove Programs Entry
-	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SpaceCadetPinball"
 
 SectionEnd
