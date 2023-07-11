@@ -6,11 +6,11 @@
 ; Settings
 Name "3D Pinball for Windows - Space Cadet"
 OutFile "space-cadet-pinball_(v2.0.1)_installer.exe"
-RequestExecutionLevel user
 Unicode True
 RequestExecutionLevel admin
 Icon "assets\icon\pinball.ico"
 BrandingText "v2.0.1 (installer v3): k4zmu2a"
+SetCompressor /SOLID lzma ; This reduces installer size by approx 30~35%
 
 ; x86 vs x86-64 autodetection / install directory
 Function .onInit
