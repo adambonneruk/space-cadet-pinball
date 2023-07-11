@@ -94,7 +94,7 @@ SectionEnd
 ; Desktop Shortcut
 Section "Desktop Shortcut" SecDeskShort
 
-	CreateShortcut "$DESKTOP\3D Pinball for Windows - Space Cadet.lnk" "$INSTDIR\SpaceCadetPinball.exe"
+	CreateShortcut "$DESKTOP\3D Pinball for Windows - Space Cadet.lnk" "$INSTDIR\SpaceCadetPinball.exe" "" "$INSTDIR\pinball.ico" 0
 
 SectionEnd
 
