@@ -8,6 +8,8 @@ OutFile "space-cadet-pinball_(v2.0.1)_installer.exe"
 RequestExecutionLevel user
 Unicode True
 RequestExecutionLevel admin
+Icon "assets\icon\pinball.ico"
+BrandingText "Adam Bonner"
 
 ; x86 vs x86-64 Install Dir
 Function .onInit
