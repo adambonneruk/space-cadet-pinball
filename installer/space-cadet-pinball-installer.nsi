@@ -20,7 +20,7 @@ Unicode True
 ; settings
 Name "${$PRODUCT_NAME} ${$APPVERSION}"
 OutFile "Space Cadet Pinball Installer (${$APPVERSION}).exe"
-BrandingText "${$APPVERSION} by k4zmu2a | installer by adambonneruk"
+BrandingText "${$APPVERSION} by k4zmu2a | installer by ${$PRODUCT_PUBLISHER}"
 
 ; gui configuration
 !define MUI_ICON ${$ICON_PATH}
@@ -46,13 +46,16 @@ Section "Base Game Files (Modern Decompilation)" SecBaseGame ; k4zmu2a's files
 
 	SectionIn RO ; read-only
 	SetOutPath $INSTDIR
+	DetailPrint "Cleaning install directory"
 	RMDIR /r $INSTDIR\*.* ; clean the installation directory
 	File ${$ICON_PATH} ; add icon for add/remove programs
 
 	; copy files given x86 or x86-64 operating system
 	${If} ${RunningX64}
+		DetailPrint "64-Bit Mode"
 		File /r /x *.txt /x *.sha1 assets\software\SpaceCadetPinballx64Win\*.*
 	${else}
+		DetailPrint "32-Bit Mode"
 		File /r /x *.txt /x *.sha1 assets\software\SpaceCadetPinballx86Win\*.*
 	${EndIf}
 
@@ -74,18 +77,21 @@ SectionEnd
 Section "${$PRODUCT_NAME}" secPinball ; windows xp pinball.exe files
 
 	SectionIn RO ; read-only
+	DetailPrint "Copy Windows XP Pinball files"
 	File /r /x *.exe /x *.txt /x *.sha1 assets\software\Pinball\*.* ; copy pinball.exe's files
 
 SectionEnd
 
 Section /o "Full Tilt! Pinball files" secFullTilt ; full tilt pinball file ; /o == unchecked
 
+	DetailPrint "Copy Full Tilt! Pinball files"
 	File /nonfatal /r /x *.exe /x *.txt /x *.sha1 assets\software\CADET\*.* ; copy full tile files ; optional
 
 SectionEnd
 
 Section "Start Menu Shortcuts" SecStartMenu
 
+	DetailPrint "Creating Start Menu Shortcuts"
 	CreateDirectory "$SMPROGRAMS\Space Cadet Pinball"
 	CreateShortcut "$SMPROGRAMS\Space Cadet Pinball\${$PRODUCT_NAME}.lnk" "$INSTDIR\SpaceCadetPinball.exe"
 	CreateShortcut "$SMPROGRAMS\Space Cadet Pinball\Uninstall.lnk" "$INSTDIR\uninstall.exe"
@@ -94,6 +100,7 @@ SectionEnd
 
 Section "Desktop Shortcut" SecDeskShort
 
+	DetailPrint "Creating Desktop Shortcut"
 	CreateShortcut "$DESKTOP\${$PRODUCT_NAME}.lnk" "$INSTDIR\SpaceCadetPinball.exe" "" "$INSTDIR\pinball.ico" 0
 
 SectionEnd
@@ -123,7 +130,7 @@ FunctionEnd
 
 ; component descriptions
 LangString DESC_SecBaseGame ${LANG_ENGLISH} 	"Install K4zmu2a's modern decompilation executable, includes 32/64-bit auto-detection"
-LangString DESC_SecPinball ${LANG_ENGLISH} 		"Install the classic pinball game included with older versions of Windows"
+LangString DESC_SecPinball ${LANG_ENGLISH}		"Install the classic pinball game included with older versions of Windows"
 LangString DESC_SecFullTilt ${LANG_ENGLISH} 	"Install Full Tilt! Pinball with high-resolution textures and advanced gameplay features"
 LangString DESC_SecStartMenu ${LANG_ENGLISH} 	"Install Windows Start Menu shortcuts"
 LangString DESC_SecDeskShort ${LANG_ENGLISH} 	"Install Windows desktop shortcut"
