@@ -72,12 +72,14 @@ SectionEnd
 
 Section "3D Pinball for Windows - Space Cadet" secPINBALL
 
+	SectionIn RO
+
 	; Generic PINBALL.EXE files from Windows XP
 	File /r /x *.txt /x *.sha1 assets\software\Pinball\*.*
 
 SectionEnd
 
-Section "Full Tilt! Pinball - Space Cadet" secCADET
+Section  /o "Full Tilt! Pinball Files" secCADET ; /o == unchecked
 
 	; 32-Bit Commercial CADET package files from disc
 	File /nonfatal /r /x *.txt /x *.sha1 assets\software\CADET\*.*
@@ -109,53 +111,10 @@ Function .onInit
 		StrCpy $INSTDIR "$PROGRAMFILES\Space Cadet Pinball"  ; x86
 	${EndIf}
 
-	; Mutually Exclusive Files Setup
-	Push $1
-
-	StrCpy $R9 ${secPINBALL} ; Gotta remember which section we are at now...
-	SectionGetFlags ${secPINBALL} $1
-	IntOp $1 $1 | ${SF_SELECTED}
-	SectionSetFlags ${secPINBALL} $1
-
-	SectionGetFlags ${secCADET} $1
-	IntOp $1 $1 & ${SECTION_OFF}
-	SectionSetFlags ${secCADET} $1
-
-	Pop $1
-
-FunctionEnd
-
-; Mutually Exclusive Files Fuction to Deselect the Other Option
-Function .onSelChange
-
-	Push $1
-	StrCmp $R9 ${secPINBALL} check_secPINBALL
-
-		SectionGetFlags ${secPINBALL} $1
-		IntOp $1 $1 & ${SF_SELECTED}
-		IntCmp $1 ${SF_SELECTED} 0 done done
-			StrCpy $R9 ${secPINBALL}
-			SectionGetFlags ${secCADET} $1
-			IntOp $1 $1 & ${SECTION_OFF}
-			SectionSetFlags ${secCADET} $1
-	Goto done
-	check_secPINBALL:
-
-		SectionGetFlags ${secCADET} $1
-		IntOp $1 $1 & ${SF_SELECTED}
-		IntCmp $1 ${SF_SELECTED} 0 done done
-			StrCpy $R9 ${secCADET}
-			SectionGetFlags ${secPINBALL} $1
-			IntOp $1 $1 & ${SECTION_OFF}
-			SectionSetFlags ${secPINBALL} $1
-
-	done:
-	Pop $1
-
 FunctionEnd
 
 ;Language strings
-LangString DESC_SecSCP ${LANG_ENGLISH} 			"Install the base game, Kk4zmu2a's decompilation version, includes 32/64-bit auto-detection"
+LangString DESC_SecSCP ${LANG_ENGLISH} 			"Install K4zmu2a's decompilation base game, includes 32/64-bit auto-detection"
 LangString DESC_SecPINBALL ${LANG_ENGLISH} 		"Install the simpler, pre-installed pinball game included with older versions of Windows"
 LangString DESC_SecCADET ${LANG_ENGLISH} 		"Install the Full Tilt! version with high-resolution textures and advanced gameplay features"
 LangString DESC_SecStartMenu ${LANG_ENGLISH} 	"Install Windows Start Menu shortcuts"
