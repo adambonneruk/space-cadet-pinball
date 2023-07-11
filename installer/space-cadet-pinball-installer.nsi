@@ -66,12 +66,6 @@ Section "Base Game Files (Modern Decompilation)" SecBaseGame ; k4zmu2a's files
 	WriteRegDWORD HKLM "${$REG_PATH}" "NoModify" 1
 	WriteRegDWORD HKLM "${$REG_PATH}" "NoRepair" 1
 
-	; estimate size of installed files for the add/remove programs control panel
-	!define ARP "${$REG_PATH}"
-	${GetSize} "$INSTDIR" "/S=0K" $0 $1 $2
-	IntFmt $0 "0x%08X" $0
-	WriteRegDWORD HKLM "${ARP}" "EstimatedSize" "$0"
-
 	; create uninstaller
 	WriteUninstaller "$INSTDIR\uninstall.exe"
 
@@ -80,13 +74,13 @@ SectionEnd
 Section "${$PRODUCT_NAME}" secPinball ; windows xp pinball.exe files
 
 	SectionIn RO ; read-only
-	File /r /x *.txt /x *.sha1 assets\software\Pinball\*.* ; copy pinball.exe's files
+	File /r /x *.exe /x *.txt /x *.sha1 assets\software\Pinball\*.* ; copy pinball.exe's files
 
 SectionEnd
 
 Section /o "Full Tilt! Pinball files" secFullTilt ; full tilt pinball file ; /o == unchecked
 
-	File /nonfatal /r /x *.txt /x *.sha1 assets\software\CADET\*.* ; copy full tile files ; optional
+	File /nonfatal /r /x *.exe /x *.txt /x *.sha1 assets\software\CADET\*.* ; copy full tile files ; optional
 
 SectionEnd
 
@@ -117,15 +111,25 @@ Function .onInit
 
 FunctionEnd
 
+Function .onInstSuccess
+
+	; estimate size of installed files for the add/remove programs control panel
+	!define ARP "${$REG_PATH}"
+	${GetSize} "$INSTDIR" "/S=0K" $0 $1 $2
+	IntFmt $0 "0x%08X" $0
+	WriteRegDWORD HKLM "${ARP}" "EstimatedSize" "$0"
+
+FunctionEnd
+
 ; component descriptions
-LangString DESC_SecSCP ${LANG_ENGLISH} 			"Install K4zmu2a's decompilation base game, includes 32/64-bit auto-detection"
+LangString DESC_SecBaseGame ${LANG_ENGLISH} 	"Install K4zmu2a's modern decompilation executable, includes 32/64-bit auto-detection"
 LangString DESC_SecPinball ${LANG_ENGLISH} 		"Install the classic pinball game included with older versions of Windows"
 LangString DESC_SecFullTilt ${LANG_ENGLISH} 	"Install Full Tilt! Pinball with high-resolution textures and advanced gameplay features"
 LangString DESC_SecStartMenu ${LANG_ENGLISH} 	"Install Windows Start Menu shortcuts"
 LangString DESC_SecDeskShort ${LANG_ENGLISH} 	"Install Windows desktop shortcut"
 
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecSCP} $(DESC_SecSCP)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecBaseGame} $(DESC_SecBaseGame)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecPinball} $(DESC_SecPinball)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecFullTilt} $(DESC_SecFullTilt)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecStartMenu} $(DESC_SecStartMenu)
@@ -137,10 +141,18 @@ Section "Uninstall"
 
 	RMDIR /r $INSTDIR\*.* ; clean the installation directory
 	Delete "$DESKTOP\${$PRODUCT_NAME}.lnk" ; delete desktop shortcut
-	DeleteRegKey HKLM "${$REG_PATH}" ; delete windows add/remove programs key
 
 	; remove start menu shortcuts
 	Delete "$SMPROGRAMS\Space Cadet Pinball\*.lnk"
 	RMDir "$SMPROGRAMS\Space Cadet Pinball"
+
+	; set registry view given x86 or x86-64 operating system
+	${If} ${RunningX64}
+		SetRegView 64
+	${else}
+		SetRegView 32
+	${EndIf}
+
+	DeleteRegKey HKLM "${$REG_PATH}" ; delete windows add/remove programs key
 
 SectionEnd
