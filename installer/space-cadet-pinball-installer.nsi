@@ -23,17 +23,6 @@ SetCompressor /SOLID lzma	; This reduces installer size by approx 30~35%
 !define MUI_HEADERIMAGE_BITMAP ".\assets\header.bmp"
 !define MUI_COMPONENTSPAGE_SMALLDESC ;Show components page with a small description and big box for components
 
-; x86 vs x86-64 autodetection / install directory
-Function .onInit
-
-	${If} ${RunningX64}
-		StrCpy $INSTDIR "$PROGRAMFILES64\Space Cadet Pinball" ; x86-64
-	${else}
-		StrCpy $INSTDIR "$PROGRAMFILES\Space Cadet Pinball"  ; x86
-	${EndIf}
-
-FunctionEnd
-
 ; Pages (as MUI2 Macros)
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE "assets\installer-licences.txt"
@@ -45,13 +34,12 @@ FunctionEnd
 !insertmacro MUI_LANGUAGE "English"
 
 ;Installer Sections
-Section "3D Pinball for Windows - Space Cadet" SecSCP
+Section "Base Game Files (modern decompilation)" SecSCP
 
 	SectionIn RO
 	SetOutPath $INSTDIR
 
-	; Generic PINBALL.EXE files from Windows XP
-	File /r /x *.txt /x *.sha1 assets\software\Pinball\*.*
+	RMDIR /r $INSTDIR\*.* ; Remove all files and folders from install directory for clean installation
 	File "assets\icon\pinball.ico" ; add icon for add/remove programs
 
 	; Recompiled/SDL k4zmu2a files (with x86 vs x86-64 autodetection)
@@ -82,6 +70,20 @@ Section "3D Pinball for Windows - Space Cadet" SecSCP
 
 SectionEnd
 
+Section "3D Pinball for Windows - Space Cadet" secPINBALL
+
+	; Generic PINBALL.EXE files from Windows XP
+	File /r /x *.txt /x *.sha1 assets\software\Pinball\*.*
+
+SectionEnd
+
+Section "Full Tilt! Pinball - Space Cadet" secCADET
+
+	; 32-Bit Commercial CADET package files from disc
+	File /nonfatal /r /x *.txt /x *.sha1 assets\software\CADET\*.*
+
+SectionEnd
+
 ; Start Menu Shortcuts
 Section "Start Menu Shortcuts" SecStartMenu
 
@@ -98,15 +100,72 @@ Section "Desktop Shortcut" SecDeskShort
 
 SectionEnd
 
-;Descriptions
+; x86 vs x86-64 autodetection / install directory
+Function .onInit
+
+	${If} ${RunningX64}
+		StrCpy $INSTDIR "$PROGRAMFILES64\Space Cadet Pinball" ; x86-64
+	${else}
+		StrCpy $INSTDIR "$PROGRAMFILES\Space Cadet Pinball"  ; x86
+	${EndIf}
+
+	; Mutually Exclusive Files Setup
+	Push $1
+
+	StrCpy $R9 ${secPINBALL} ; Gotta remember which section we are at now...
+	SectionGetFlags ${secPINBALL} $1
+	IntOp $1 $1 | ${SF_SELECTED}
+	SectionSetFlags ${secPINBALL} $1
+
+	SectionGetFlags ${secCADET} $1
+	IntOp $1 $1 & ${SECTION_OFF}
+	SectionSetFlags ${secCADET} $1
+
+	Pop $1
+
+FunctionEnd
+
+; Mutually Exclusive Files Fuction to Deselect the Other Option
+Function .onSelChange
+
+	Push $1
+	StrCmp $R9 ${secPINBALL} check_secPINBALL
+
+		SectionGetFlags ${secPINBALL} $1
+		IntOp $1 $1 & ${SF_SELECTED}
+		IntCmp $1 ${SF_SELECTED} 0 done done
+			StrCpy $R9 ${secPINBALL}
+			SectionGetFlags ${secCADET} $1
+			IntOp $1 $1 & ${SECTION_OFF}
+			SectionSetFlags ${secCADET} $1
+	Goto done
+	check_secPINBALL:
+
+		SectionGetFlags ${secCADET} $1
+		IntOp $1 $1 & ${SF_SELECTED}
+		IntCmp $1 ${SF_SELECTED} 0 done done
+			StrCpy $R9 ${secCADET}
+			SectionGetFlags ${secPINBALL} $1
+			IntOp $1 $1 & ${SECTION_OFF}
+			SectionSetFlags ${secPINBALL} $1
+
+	done:
+	Pop $1
+
+FunctionEnd
+
 ;Language strings
 LangString DESC_SecSCP ${LANG_ENGLISH} 			"Install the base game, Kk4zmu2a's decompilation version, includes 32/64-bit auto-detection"
+LangString DESC_SecPINBALL ${LANG_ENGLISH} 		"Install the simpler, pre-installed pinball game included with older versions of Windows"
+LangString DESC_SecCADET ${LANG_ENGLISH} 		"Install the Full Tilt! version with high-resolution textures and advanced gameplay features"
 LangString DESC_SecStartMenu ${LANG_ENGLISH} 	"Install Windows Start Menu shortcuts"
 LangString DESC_SecDeskShort ${LANG_ENGLISH} 	"Install Windows desktop shortcut"
 
 ;Assign language strings to sections
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
     !insertmacro MUI_DESCRIPTION_TEXT ${SecSCP} $(DESC_SecSCP)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecPINBALL} $(DESC_SecPINBALL)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecCADET} $(DESC_SecCADET)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecStartMenu} $(DESC_SecStartMenu)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecDeskShort} $(DESC_SecDeskShort)
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
@@ -114,7 +173,7 @@ LangString DESC_SecDeskShort ${LANG_ENGLISH} 	"Install Windows desktop shortcut"
 ;Uninstaller Section
 Section "Uninstall"
 
-	Delete $INSTDIR\*.* ; Remove all files from install directory
+	RMDIR /r $INSTDIR\*.* ; Remove all files and folders from install directory
 	Delete "$SMPROGRAMS\Space Cadet Pinball\*.lnk" ; Remove shortcuts
 	Delete "$DESKTOP\3D Pinball for Windows - Space Cadet.lnk" ; Remove desktop shortcut
 
