@@ -1,6 +1,7 @@
 ; Includes
 !include "LogicLib.nsh"
 !include "x64.nsh"
+!include "FileFunc.nsh"
 
 ; Settings
 Name "3D Pinball for Windows - Space Cadet"
@@ -9,7 +10,7 @@ RequestExecutionLevel user
 Unicode True
 RequestExecutionLevel admin
 Icon "assets\icon\pinball.ico"
-BrandingText "k4zmu2a, adambonneruk"
+BrandingText "v2.0.1 (installer v3): k4zmu2a"
 
 ; x86 vs x86-64 autodetection / install directory
 Function .onInit
@@ -38,6 +39,7 @@ Section "3D Pinball for Windows - Space Cadet"
 
 	; Generic PINBALL.EXE files from Windows XP
 	File /r /x *.txt /x *.sha1 assets\software\Pinball\*.*
+	File "assets\icon\pinball.ico" ; add icon for add/remove programs
 
 	; Recompiled/SDL k4zmu2a files (with x86 vs x86-64 autodetection)
 	${If} ${RunningX64}
@@ -45,6 +47,22 @@ Section "3D Pinball for Windows - Space Cadet"
 	${else}
 		File /r /x *.txt /x *.sha1 assets\software\SpaceCadetPinballx86Win\*.*
 	${EndIf}
+
+	; Add Uninstaller Entry to Add/Remove Programs
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SpaceCadetPinball" "DisplayName" "3D Pinball for Windows - Space Cadet"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SpaceCadetPinball" "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SpaceCadetPinball" "QuietUninstallString" "$\"$INSTDIR\uninstall.exe$\" /S"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SpaceCadetPinball" "DisplayIcon" "$\"$INSTDIR\pinball.ico$\""
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SpaceCadetPinball" "DisplayVersion" "v2.0.1"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SpaceCadetPinball" "Publisher" "adambonneruk" ; Win 10 not showing this
+	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SpaceCadetPinball" "NoModify" 1
+	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SpaceCadetPinball" "NoRepair" 1
+
+	; Get Installed Size for use in Estimated Size in Windows Add/Remove Programs
+	!define ARP "Software\Microsoft\Windows\CurrentVersion\Uninstall\SpaceCadetPinball"
+	${GetSize} "$INSTDIR" "/S=0K" $0 $1 $2
+	IntFmt $0 "0x%08X" $0
+	WriteRegDWORD HKLM "${ARP}" "EstimatedSize" "$0"
 
 	; Create Uninstaller
 	WriteUninstaller "$INSTDIR\uninstall.exe"
@@ -69,5 +87,8 @@ Section "Uninstall"
 	; Remove directories
 	RMDir "$SMPROGRAMS\Space Cadet Pinball"
 	RMDir "$INSTDIR"
+
+	; Remove Windows Add/Remove Programs Entry
+	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SpaceCadetPinball"
 
 SectionEnd
