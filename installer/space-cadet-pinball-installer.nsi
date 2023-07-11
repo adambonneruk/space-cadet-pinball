@@ -2,27 +2,27 @@
 !include "LogicLib.nsh"
 !include "x64.nsh"
 
-; Settings -----------------------------------------------------------------------------------
+; Settings
 Name "3D Pinball for Windows - Space Cadet"
 OutFile "space-cadet-pinball_(v2.0.1)_installer.exe"
 RequestExecutionLevel user
 Unicode True
 RequestExecutionLevel admin
 Icon "assets\icon\pinball.ico"
-BrandingText "Adam Bonner"
+BrandingText "k4zmu2a, adambonneruk"
 
-; x86 vs x86-64 Install Dir
+; x86 vs x86-64 autodetection / install directory
 Function .onInit
 
 	${If} ${RunningX64}
-		StrCpy $INSTDIR "$PROGRAMFILES64\space-cadet-pinball" #64
+		StrCpy $INSTDIR "$PROGRAMFILES64\space-cadet-pinball" ; x86-64
 	${else}
-		StrCpy $INSTDIR "$PROGRAMFILES\space-cadet-pinball" #32
+		StrCpy $INSTDIR "$PROGRAMFILES\space-cadet-pinball"  ; x86
 	${EndIf}
 
 FunctionEnd
 
-; Pages --------------------------------------------------------------------------------------
+; Pages
 Page components
 Page directory
 Page instfiles
@@ -30,15 +30,16 @@ Page instfiles
 UninstPage uninstConfirm
 UninstPage instfiles
 
-; The Stuff to Install -----------------------------------------------------------------------
+; Files to map/install
 Section "3D Pinball for Windows - Space Cadet"
 
 	SectionIn RO
 	SetOutPath $INSTDIR
 
-	; Add Files from Windows XP, Github .exe x4 Release and Exclude drop.txt
+	; Generic PINBALL.EXE files from Windows XP
 	File /r /x *.txt /x *.sha1 assets\software\Pinball\*.*
 
+	; Recompiled/SDL k4zmu2a files (with x86 vs x86-64 autodetection)
 	${If} ${RunningX64}
 		File /r /x *.txt /x *.sha1 assets\software\SpaceCadetPinballx64Win\*.*
 	${else}
@@ -50,7 +51,7 @@ Section "3D Pinball for Windows - Space Cadet"
 
 SectionEnd
 
-; Start Menu Shortcuts -----------------------------------------------------------------------
+; Start Menu Shortcuts
 Section "Start Menu Shortcuts"
 
 	CreateDirectory "$SMPROGRAMS\Space Cadet Pinball"
@@ -59,14 +60,11 @@ Section "Start Menu Shortcuts"
 
 SectionEnd
 
-; Uninstaller --------------------------------------------------------------------------------
+; Uninstaller
 Section "Uninstall"
 
-	; Remove all files from install directory
-	Delete $INSTDIR\*.*
-
-	; Remove shortcuts, if any
-	Delete "$SMPROGRAMS\Space Cadet Pinball\*.lnk"
+	Delete $INSTDIR\*.* ; Remove all files from install directory
+	Delete "$SMPROGRAMS\Space Cadet Pinball\*.lnk" ; Remove shortcuts
 
 	; Remove directories
 	RMDir "$SMPROGRAMS\Space Cadet Pinball"
