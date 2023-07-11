@@ -19,8 +19,8 @@ SetCompressor /SOLID lzma	; This reduces installer size by approx 30~35%
 !define MUI_UNICON "assets\icon\pinball.ico"
 !define MUI_ABORTWARNING
 !define MUI_WELCOMEFINISHPAGE_BITMAP "assets\wizard.bmp"
-!define MUI_HEADERIMAGE_BITMAP ".\graphics\headerLeft.bmp" ; optional
-!define MUI_HEADERIMAGE_BITMAP_RTL ".\graphics\headerLeft_RTL.bmp" ; Header for RTL languages
+!define MUI_HEADERIMAGE
+!define MUI_HEADERIMAGE_BITMAP ".\assets\header.bmp"
 !define MUI_COMPONENTSPAGE_SMALLDESC ;Show components page with a small description and big box for components
 
 ; x86 vs x86-64 autodetection / install directory
