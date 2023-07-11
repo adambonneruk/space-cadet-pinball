@@ -3,15 +3,17 @@
 ## Introduction
 As a software developer I've written lots of code before but I wanted to tackle an interesting problem: _"how do I get pinball onto a relatives PC without giving them complex instructions?"_ and thus the idea of writing an installer was born.
 
-
-
 ### Project Aims, Features and Background
 - Single ```.exe``` to install 3D Pinball for Windows – Space Cadet on a modern (Windows 10/11) PC
 - K4zmu2a modern SDL-based decompilation executables for both x86 and x86-64 platforms
 - Start Menu, Desktop Shortcut, Add/Remove Programs, and an Uninstaller
 
 ### Prerequisites & Build Instructions
-tbc
+
+```powershell
+# Build Installer
+makensis '.\installer\space-cadet-pinball-installer.nsi'
+```
 
 ---
 ## Copyright Notice(s)
