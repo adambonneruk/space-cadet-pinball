@@ -1,2 +1,5 @@
 # Ignore the following file extensions
 *.exe
+
+# Ignore assets/software
+installer/assets/software/
