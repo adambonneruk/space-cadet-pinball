@@ -14,6 +14,7 @@ This project welcomes contributions of all types. Please feel welcome to get inv
 ## Pull Requests
 - Create a fork, create your changes and raise the PR against the develop or document branches. PRs against the master branch will be rejected
 - If you are unsure, raise an issue/ask first, make a PR second
+- Try to follow the "one-file-per-commit" rule
 
 ## Actions
 - No actions are used by this repository

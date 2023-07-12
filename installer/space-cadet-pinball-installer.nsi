@@ -8,8 +8,8 @@
 ; defines
 !define $PRODUCT_NAME "3D Pinball for Windows - Space Cadet"
 !define $APPVERSION "v2.0.1"
-!define $PRODUCT_PUBLISHER "Adam Bonner"
-!define $ICON_PATH "assets\icon\pinball.ico"
+!define $PRODUCT_PUBLISHER "adambonneruk"
+!define $ICON_PATH "assets\icon\installer.ico"
 !define $REG_PATH "Software\Microsoft\Windows\CurrentVersion\Uninstall\Space Cadet Pinball"
 
 ; compiler options
@@ -20,7 +20,7 @@ Unicode True
 ; settings
 Name "${$PRODUCT_NAME} ${$APPVERSION}"
 OutFile "Space Cadet Pinball Installer (${$APPVERSION}).exe"
-BrandingText "${$APPVERSION} by k4zmu2a | installer by ${$PRODUCT_PUBLISHER}"
+BrandingText "k4zmu2a | installer by ${$PRODUCT_PUBLISHER}"
 
 ; gui configuration
 !define MUI_ICON ${$ICON_PATH}
@@ -48,7 +48,7 @@ Section "Base Game Files (Modern Decompilation)" SecBaseGame ; k4zmu2a's files
 	SetOutPath $INSTDIR
 	DetailPrint "Cleaning install directory"
 	RMDIR /r $INSTDIR\*.* ; clean the installation directory
-	File ${$ICON_PATH} ; add icon for add/remove programs
+	File "assets\icon\pinball.ico" ; add proper icon for add/remove programs
 
 	; copy files given x86 or x86-64 operating system
 	${If} ${RunningX64}
