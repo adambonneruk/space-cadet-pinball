@@ -3,6 +3,19 @@
 ## Introduction
 As a software developer I've written lots of code before but I wanted to tackle an interesting problem: _"how do I get pinball onto a relatives PC without giving them complex instructions?"_ and thus the idea of writing an installer was born.
 
+### Screenshots
+
+#### Installer Pages
+
+| ![](.images/demo-1.jpg) | ![](.images/demo-2.jpg) | ![](.images/demo-3.jpg) | ![](.images/demo-4.jpg) | ![](.images/demo-5.jpg) |
+| :---------------------: | :---------------------: | :---------------------: | :---------------------: | :---------------------: |
+
+#### Pinball on Windows
+
+| ![](.images/windows-xp.jpg) |  ![](.images/windows-ten.jpg)   |
+| :-------------------------: | :-----------------------------: |
+| The original on Windows XP  | K4zmu2a's version on Windows 10 |
+
 ### Project Aims, Features and Background
 - Single ```.exe``` to install 3D Pinball for Windows on a modern (Windows 10/11) PC
 - K4zmu2a modern SDL-based executables for both x86 and x86-64 platforms
@@ -19,32 +32,36 @@ As a software developer I've written lots of code before but I wanted to tackle 
 
   ```powershell
   # Download, Unpack, and Place PINBALL.EXE Files (with Clean-Up)
+  # Assumes execution from project root
   Invoke-WebRequest -Uri 'https://archive.org/download/3d-pinball-space-cadet_202103/3D%20Pinball%20Space%20Cadet.zip' -OutFile '3DPinballSpaceCadet.zip' ; Expand-Archive '3DPinballSpaceCadet.zip' xp-files ; xcopy 'xp-files\3D Pinball Space Cadet' 'software\Pinball' ; rm -rf '3DPinballSpaceCadet.zip' ; rm -rf 'xp-files'
   ```
 
 - Verify checksums
 
   ```powershell
+  # Assumes execution from project root
   start '.\software\Pinball\checksum.sha1'
   ```
 
 ### 3. Latest  [k4zmu2a/SpaceCadetPinball](https://github.com/k4zmu2a/SpaceCadetPinball/releases) release (currently [v2.0.1](https://github.com/k4zmu2a/SpaceCadetPinball/releases/tag/Release_2.0.1))
 
-  > __Note__: Installer requires both x32/x86 and x64/x86-64 decompilations to be stored in _software_ folder correctly
+  > __Note__: Installer requires both x32/x86 and x64/x86-64 decompilations to be stored in _assets/software_ folder correctly
 
 - Download and unpack using PowerShell:
 
   ```powershell
   # Download, Unpack, and Place x86-64 k4zmu2a Files (with Clean-Up)
+  # Assumes execution from project root
   Invoke-WebRequest -Uri 'https://github.com/k4zmu2a/SpaceCadetPinball/releases/download/Release_2.0.1/SpaceCadetPinballx64Win.zip' -OutFile 'SpaceCadetPinballx64Win.zip' ; Expand-Archive 'SpaceCadetPinballx64Win.zip' '.\software\SpaceCadetPinballx64Win\' ; rm -rf 'SpaceCadetPinballx64Win.zip'
 
   # Download, Unpack, and Place x86 k4zmu2a Files (with Clean-Up)
+  # Assumes execution from project root
   Invoke-WebRequest -Uri 'https://github.com/k4zmu2a/SpaceCadetPinball/releases/download/Release_2.0.1/SpaceCadetPinballx86Win.zip' -OutFile 'SpaceCadetPinballx86Win.zip' ; Expand-Archive 'SpaceCadetPinballx86Win.zip' '.\software\SpaceCadetPinballx86Win\' ; rm -rf 'SpaceCadetPinballx86Win.zip'
   ```
 
 - Verify checksums
-
   ```powershell
+  # Assumes execution from project root
   start '.\software\SpaceCadetPinballx64Win\checksum.sha1'
   start '.\software\SpaceCadetPinballx86Win\checksum.sha1'
   ```
@@ -55,122 +72,114 @@ As a software developer I've written lots of code before but I wanted to tackle 
 
 - Download and unpack to ```./Software/CADET/```:
 - Verify checksums
-
   ```powershell
+  # Assumes execution from project root
   start '.\software\CADET\checksum.sha1'
   ```
 
 ### 5. Check project structure
 - Folder structure should resemble the following ```tree```:
-
   ```
-  tree here
+  space-cadet-pinball-installer
+  │   .gitattributes
+  │   .gitignore
+  │   LICENCE
+  │   README.md
+  │
+  └───installer
+      │   space-cadet-pinball-installer.nsi
+      │
+      └───assets
+          │   header.bmp
+          │   installer-licences.txt
+          │   wizard.bmp
+          │
+          ├───icon
+          │       pinball.ico
+          │
+          └───software
+              ├───CADET
+              │   │   CADET.BMP
+              │   │   CADET.DAT
+              │   │   CADET.EXE
+              │   │
+              │   └───SOUND
+              │           SOUND1.WAV
+              │           SOUND104.WAV
+              │           SOUND105.WAV
+              │           SOUND108.WAV
+              │           ...
+              │           SOUND9.WAV
+              │           TABA1.MDS
+              │           TABA2.MDS
+              │           TABA3.MDS
+              │
+              ├───Pinball
+              │       FONT.DAT
+              │       PINBALL.DAT
+              │       PINBALL.EXE
+              │       PINBALL.MID
+              │       PINBALL2.MID
+              │       SOUND1.WAV
+              │       SOUND104.WAV
+              │       ...
+              │       SOUND9.WAV
+              │       SOUND999.WAV
+              │       table.bmp
+              │       wavemix.inf
+              │
+              ├───SpaceCadetPinballx64Win
+              │       SDL2.dll
+              │       SDL2_mixer.dll
+              │       SpaceCadetPinball.exe
+              │
+              └───SpaceCadetPinballx86Win
+                      SDL2.dll
+                      SDL2_mixer.dll
+                      SpaceCadetPinball.exe
   ```
 
 ### 6. Create the installer using _makensis_
 - Execute makensis
   ```powershell
-  # Build Installer
+  # Build installer, assumes execution from project root
   makensis '.\installer\space-cadet-pinball-installer.nsi'
   ```
 - .exe is created in the ```installer``` (.nsi) directory
-- double click to install...
 
-  ![](.images/installer-demo-1-welcome.png)
+  ![](.images/demo-welcome.png)
 
+- Enjoy 😎
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## 3D Pinball for Windows - Space Cadet: A History
-
-| ![](.images/windows-xp.jpg) |  ![](.images/windows-ten.jpg)   |
-| :-------------------------: | :-----------------------------: |
-| The original on Windows XP  | K4zmu2a's version on Windows 10 |
+---
+## 3D Pinball for Windows - Space Cadet: A Brief History
 
 ### Windows 95, Full Tilt! and Windows XP
 
-<img align="right" src=".images/logo-3dpfw.jpg" />
+<img align="right" width="128px" src=".images/windows-xp.jpg" />
 
-_3D Pinball for Windows – Space Cadet_ was a pinball video game that was included with Windows XP. The game quickly became a favourite among Windows users and provided a fun and entertaining experience right on their desktops. The development of _3D Pinball for Windows_ can be traced back to the 1990s when Microsoft partnered with Cinematronics; a pinball manufacturer, and Maxis to create a pinball game for _Microsoft Plus! for Windows 95_.
+_3D Pinball for Windows – Space Cadet_ was a pinball video game that was included with Windows XP. The development of _3D Pinball for Windows_ can be traced back to the 1990s when Microsoft partnered with Cinematronics (a pinball manufacturer) and Maxis (Software Publisher) to create a pinball game for _Microsoft Plus! for Windows 95_.
 
-"Full Tilt! Pinball" is a pinball video game developed by Cinematronics and published by Maxis. It features multiple themed pinball tables with immersive gameplay, including realistic physics, interactive elements, and challenging missions. Known for its engaging gameplay and captivating visuals, "Full Tilt! Pinball" offers a diverse pinball experience with various table designs and objectives.
+#### Full Tilt! Pinball for Windows 98
 
 <img align="right" src=".images/logo-ftp.jpg" />
 
-Maxis released Full Tilt! Pinball for Windows 98. This enhanced version of the "Space Cadet" pinball game came with two new tables (Skullduggery and Dragon's Keep) and included new missions and functionality not available in the "stock" Windows versions.
+Cinematronics & Maxis then released _Full Tilt! Pinball_ as a full featured game for Windows 98. _Full Tilt!_ featured multiple themed pinball tables with immersive gameplay, including realistic physics, interactive elements, and challenging missions.
+
+
+This enhanced version of the "Space Cadet" pinball game came with two new tables (Skullduggery and Dragon's Keep) and included new missions and functionality not available in the "stock" Windows versions.
+
+#### Windows XP
+
+<img align="right" src=".images/logo-3dpfw.jpg" />
 
 [David Plummer](https://github.com/davepl) while working at Microsoft ported the code to Windows XP but modern UI developments, the 64-bit shell, combined with time pressures releasing the new Windows Vista operating system confined Pinball to the recycle bin from that release forward. ```Pinball.exe``` (the name of the _3D Pinball for Windows – Space Cadet_ executable) still works with modern (even 64-bit) versions of Windows but this code starts to look dated when viewed through a 2023 lens.
 
 ### k4zmu2a/SpaceCadetPinball
+
+<img align="right" width="128px" src=".images/windows-ten.jpg" />
+
 Enter K4zmu2a, who's decompilation project provides access to the game's source code and assets, allowing developers to understand how the game functions and potentially modify or enhance it. K4zmu2a has made a number of improvements, including the ability to load high-resolution textures from _Full Tilt!_ and allowing the game windows to be resized. This project uses SDL aiding portability across platforms, including Windows 10 x86 and x86-64 platforms. For detailed instructions on how to use and integrate this decompiled version of 3D Pinball for Windows into your own projects, please refer to the documentation provided by [K4zmu2a](https://github.com/k4zmu2a).
 
 ---
