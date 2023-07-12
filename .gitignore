@@ -3,3 +3,6 @@
 
 # Ignore assets/software
 installer/assets/software/
+
+# Ignore user vscode configuration
+.vscode/

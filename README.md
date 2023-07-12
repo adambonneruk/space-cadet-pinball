@@ -1,7 +1,9 @@
 # Space Cadet Pinball (Installer)
 
+> __Important Note__: This repository uses [Git LFS](https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage)
+
 ## Introduction
-As a software developer I've written lots of code before but I wanted to tackle an interesting problem: _"how do I get pinball onto a relatives PC without giving them complex instructions?"_ and thus the idea of writing an installer was born.
+As a software developer I've written lots of code before but I wanted to tackle an interesting problem: _"how do I get pinball onto a relatives PC without giving them complex instructions?"_ and thus the idea of writing an installer was born. This repository serves both as a personal tech reference/demo of working NSIS code as well as public solution where anyone can contribute/help out if they have passion for Window's classic Pinball game.
 
 ### Screenshots
 
@@ -33,14 +35,14 @@ As a software developer I've written lots of code before but I wanted to tackle 
   ```powershell
   # Download, Unpack, and Place PINBALL.EXE Files (with Clean-Up)
   # Assumes execution from project root
-  Invoke-WebRequest -Uri 'https://archive.org/download/3d-pinball-space-cadet_202103/3D%20Pinball%20Space%20Cadet.zip' -OutFile '3DPinballSpaceCadet.zip' ; Expand-Archive '3DPinballSpaceCadet.zip' xp-files ; xcopy 'xp-files\3D Pinball Space Cadet' 'software\Pinball' ; rm -rf '3DPinballSpaceCadet.zip' ; rm -rf 'xp-files'
+  Invoke-WebRequest -Uri 'https://archive.org/download/3d-pinball-space-cadet_202103/3D%20Pinball%20Space%20Cadet.zip' -OutFile '3DPinballSpaceCadet.zip' ; Expand-Archive '3DPinballSpaceCadet.zip' xp-files ; xcopy 'xp-files\3D Pinball Space Cadet\' 'installer\assets\software\Pinball\' ; rm -rf '3DPinballSpaceCadet.zip' ; rm -rf 'xp-files\'
   ```
 
 - Verify checksums
 
   ```powershell
   # Assumes execution from project root
-  start '.\software\Pinball\checksum.sha1'
+  start 'installer\assets\software\Pinball\checksum.sha1'
   ```
 
 ### 3. Latest  [k4zmu2a/SpaceCadetPinball](https://github.com/k4zmu2a/SpaceCadetPinball/releases) release (currently [v2.0.1](https://github.com/k4zmu2a/SpaceCadetPinball/releases/tag/Release_2.0.1))
@@ -52,18 +54,18 @@ As a software developer I've written lots of code before but I wanted to tackle 
   ```powershell
   # Download, Unpack, and Place x86-64 k4zmu2a Files (with Clean-Up)
   # Assumes execution from project root
-  Invoke-WebRequest -Uri 'https://github.com/k4zmu2a/SpaceCadetPinball/releases/download/Release_2.0.1/SpaceCadetPinballx64Win.zip' -OutFile 'SpaceCadetPinballx64Win.zip' ; Expand-Archive 'SpaceCadetPinballx64Win.zip' '.\software\SpaceCadetPinballx64Win\' ; rm -rf 'SpaceCadetPinballx64Win.zip'
+  Invoke-WebRequest -Uri 'https://github.com/k4zmu2a/SpaceCadetPinball/releases/download/Release_2.0.1/SpaceCadetPinballx64Win.zip' -OutFile 'SpaceCadetPinballx64Win.zip' ; Expand-Archive 'SpaceCadetPinballx64Win.zip' 'installer\assets\software\SpaceCadetPinballx64Win\' ; rm -rf 'SpaceCadetPinballx64Win.zip'
 
   # Download, Unpack, and Place x86 k4zmu2a Files (with Clean-Up)
   # Assumes execution from project root
-  Invoke-WebRequest -Uri 'https://github.com/k4zmu2a/SpaceCadetPinball/releases/download/Release_2.0.1/SpaceCadetPinballx86Win.zip' -OutFile 'SpaceCadetPinballx86Win.zip' ; Expand-Archive 'SpaceCadetPinballx86Win.zip' '.\software\SpaceCadetPinballx86Win\' ; rm -rf 'SpaceCadetPinballx86Win.zip'
+  Invoke-WebRequest -Uri 'https://github.com/k4zmu2a/SpaceCadetPinball/releases/download/Release_2.0.1/SpaceCadetPinballx86Win.zip' -OutFile 'SpaceCadetPinballx86Win.zip' ; Expand-Archive 'SpaceCadetPinballx86Win.zip' 'installer\assets\software\SpaceCadetPinballx86Win\' ; rm -rf 'SpaceCadetPinballx86Win.zip'
   ```
 
 - Verify checksums
   ```powershell
   # Assumes execution from project root
-  start '.\software\SpaceCadetPinballx64Win\checksum.sha1'
-  start '.\software\SpaceCadetPinballx86Win\checksum.sha1'
+  start 'installer\assets\software\SpaceCadetPinballx64Win\checksum.sha1'
+  start 'installer\assets\software\SpaceCadetPinballx86Win\checksum.sha1'
   ```
 
 ### 4. ___Optional__:_ Full Tilt! Pinball - Space Cadet Files
@@ -74,7 +76,7 @@ As a software developer I've written lots of code before but I wanted to tackle 
 - Verify checksums
   ```powershell
   # Assumes execution from project root
-  start '.\software\CADET\checksum.sha1'
+  start 'installer\assets\software\CADET\checksum.sha1'
   ```
 
 ### 5. Check project structure
@@ -174,7 +176,7 @@ This enhanced version of the "Space Cadet" pinball game came with two new tables
 
 <img align="right" src=".images/logo-3dpfw.jpg" />
 
-[David Plummer](https://github.com/davepl) while working at Microsoft ported the code to Windows XP but modern UI developments, the 64-bit shell, combined with time pressures releasing the new Windows Vista operating system confined Pinball to the recycle bin from that release forward. ```Pinball.exe``` (the name of the _3D Pinball for Windows – Space Cadet_ executable) still works with modern (even 64-bit) versions of Windows but this code starts to look dated when viewed through a 2023 lens.
+Microsoft ([David Plummer](https://github.com/davepl)) successfully ported the code to Windows XP, but modern UI developments and the 64-bit shell, combined with time pressures releasing the new Windows Vista operating system confined Pinball to the recycle bin from that release forward. ```Pinball.exe``` (the name of the _3D Pinball for Windows – Space Cadet_ executable) still works with modern (even 64-bit) versions of Windows but this code starts to look dated when viewed through a 2023 lens.
 
 ### k4zmu2a/SpaceCadetPinball
 
@@ -210,6 +212,7 @@ This project seeks to build secure, versatile and robust portable software. If y
 - The [NSIS](https://nsis.sourceforge.io/Main_Page) Project
 - [Paint.net](https://getpaint.net/) for Image editing
 - [IcoFx Portable](https://portableapps.com/apps/graphics_pictures/icofx_portable) for Icon file editing
+- SHA-1 (.sha1) files generated using [TeraCopy](https://www.codesector.com/teracopy)
 
 #### Further Reading
 - [Full Tilt! Pinball](https://en.wikipedia.org/wiki/Full_Tilt!_Pinball) on Wikipedia
@@ -223,3 +226,4 @@ This project seeks to build secure, versatile and robust portable software. If y
 - Override desktop shortcut icon: https://stackoverflow.com/questions/9317007/how-to-create-an-icon-shortcut-with-nsis#9318296
 - Merging x86 and x86-64 into one installer example: https://stackoverflow.com/questions/21822044/merge-32bit-and-64bit-installer-into-one-installer-using-nsis#21823968
 - x86-64 program files: https://nsis.sourceforge.io/Reference/$PROGRAMFILES
+- Matching splash screen font: https://www.myfonts.com/collections/quadrat-serial-font-softmaker?tab=individualStyles
