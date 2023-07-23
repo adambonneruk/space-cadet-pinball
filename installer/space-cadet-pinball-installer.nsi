@@ -54,9 +54,11 @@ Section "Base Game Files (Modern Decompilation)" SecBaseGame ; k4zmu2a's files
 	${If} ${RunningX64}
 		DetailPrint "64-Bit Mode"
 		File /r /x *.txt /x *.sha1 assets\software\SpaceCadetPinballx64Win\*.*
+		File /r /x *.txt /x *.sha1 assets\dll\vc_redist_x86-64\*.*
 	${else}
 		DetailPrint "32-Bit Mode"
 		File /r /x *.txt /x *.sha1 assets\software\SpaceCadetPinballx86Win\*.*
+		File /r /x *.txt /x *.sha1 assets\dll\vc_redist_x86\*.*
 	${EndIf}
 
 	; add uninstaller entry to the add/remove programs control panel
