@@ -14,9 +14,9 @@ As a software developer I've written lots of code before but I wanted to tackle 
 
 #### Pinball on Windows
 
-| ![](.images/windows-xp.jpg) |  ![](.images/windows-ten.jpg)   |
-| :-------------------------: | :-----------------------------: |
-| The original on Windows XP  | K4zmu2a's version on Windows 10 |
+| ![](.images/windows-xp.jpg) | ![](.images/windows-seven.jpg) | ![](.images/windows-ten.jpg) |
+| :-------------------------: | :----------------------------: | :--------------------------: |
+|   Windows XP    | Windows 7 32-bit  | Full&nbsp;Tilt! on Win 10 64-bit |
 
 ### Project Aims, Features and Background
 - Single ```.exe``` to install 3D Pinball for Windows on a modern (Windows 10/11) PC
